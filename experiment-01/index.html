@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Event Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>TechFest 2026 - Event Registration</h1>
+    <div class="form-container">
+    
+    <form  id="registrationForm">
+
+    <label for="name">Full Name:</label>
+    <input
+    type="text"
+    id="name"
+    name="name"
+    required
+    >
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="phone">Phone Number:</label>
+    <input
+    type="tel"
+    id="phone"
+    name="phone"
+    maxlength="10"
+    inputmode="numeric"
+    required
+    >
+
+    <label for="department">Department:</label>
+    <select id="department" name="department" required>
+        <option value="">Select Department</option>
+        <option value="cse">Computer Science and Engineering</option>
+        <option value="ece">Electronics and Communication Engineering</option>
+        <option value="eee">Electrical and Electronics Engineering</option>
+        <option value="mech">Mechanical Engineering</option>
+        <option value="civil">Civil Engineering</option>
+    </select>
+
+    <label for="year">Year of Study:</label>
+    <select id="year" name="year" required>
+        <option value="">Select Year</option>
+        <option value="1">First Year</option>
+        <option value="2">Second Year</option>
+        <option value="3">Third Year</option>
+        <option value="4">Fourth Year</option>
+    </select>
+
+    <label for="event">Select Event:</label>
+    <select id="event" name="event" required>
+        <option value="">Select Event</option>
+        <option value="web-development">Web Development Workshop</option>
+        <option value="cloud-computing">Cloud Computing Workshop</option>
+        <option value="ai-ml">AI and Machine Learning Seminar</option>
+    </select>
+
+    <button type="submit">Register</button>
+
+</form>
+<p id="message"></p>
+</div>
+<script src="script.js"></script>
+</body>
+
+</html>
