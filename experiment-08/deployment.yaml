@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techfest-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: techfest-app
+  template:
+    metadata:
+      labels:
+        app: techfest-app
+    spec:
+      containers:
+        - name: techfest-app
+          image: techfest-app:v2
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
