@@ -169,9 +169,19 @@ The file defines a shared `create_driver()` helper (see [Our debuggerAddress App
 - Clicks the submit button with all required fields left empty.
 - Verifies the `message` remains empty (no success message is shown).
 
+**Why `message` stays empty:** The form's input fields have the HTML5 `required` attribute. When a required field is empty and the submit button is clicked, the browser's built-in validation fires — it blocks the form's `submit` event from reaching JavaScript at all. Because the `submit` event never fires, the `registrationForm.addEventListener("submit", ...)` handler in `script.js` never runs, and `message.textContent` is never set. The `message` element remains `""`, which is what the test asserts.
+
 ## Actual Commands and Verification Performed
 
-1. Activate the Experiment 10 virtual environment:
+0. If `techfest-container-v2` is not already running, start it first:
+
+   ```bash
+   docker run -d --name techfest-container-v2 -p 8081:80 techfest-app:v2
+   ```
+
+   Skip this step if the container is already running (check with `docker ps`).
+
+1. Activate the Experiment 10 virtual environment. **Run this command from inside the `experiment-12/` directory** — the `../` in the path goes up one level to reach `experiment-10/.venv`:
 
    ```bash
    source ../experiment-10/.venv/bin/activate
@@ -183,9 +193,17 @@ The file defines a shared `create_driver()` helper (see [Our debuggerAddress App
    curl -I http://localhost:8081
    ```
 
-3. Ensure Chromium is already running with remote debugging enabled at `127.0.0.1:9222` (required, since the script connects via `debuggerAddress` rather than launching its own browser).
+   `curl -I` sends an HTTP HEAD request — it asks the server to respond with just the HTTP headers, without the full page body. A response of `HTTP/1.1 200 OK` confirms the Nginx server inside the container is running and reachable at port 8081. If this step fails, the test cases will also fail trying to connect.
 
-4. Run the test cases:
+3. Start Chromium with remote debugging enabled on port `9222` (in a separate terminal — keep it running):
+
+   ```bash
+   chromium-browser --remote-debugging-port=9222 &
+   ```
+
+   If Chromium crashes or fails to start, add `--no-sandbox` to the command — this flag may be needed depending on the WSL2 kernel configuration.
+
+4. Run the test cases directly with Python — **not** with pytest. The script calls its test functions directly at the bottom of the file:
 
    ```bash
    python test_techfest_cases.py

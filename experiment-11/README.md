@@ -148,17 +148,31 @@ Automates the calculator application at `http://localhost:8000`. It:
 4. Clicks `addButton`.
 5. Reads the resulting `#result` text and asserts it equals `"30"`.
 
+**Note on the string comparison:** `element.text` in Selenium always returns a Python `str`, not a number. Even though the calculator computes a numeric result (30), the DOM renders it as text. This is why the assertion is `result == "30"` (a string), not `result == 30` (an integer). If you accidentally compare against an integer, the assertion will fail even when the page is showing the correct value.
+
 ## Actual Commands and Verification Performed
 
-1. Activate the Experiment 10 virtual environment:
+1. Activate the Experiment 10 virtual environment. **Run this command from inside the `experiment-11/` directory** — the `../` in the path goes up one level to reach `experiment-10/.venv`:
 
    ```bash
    source ../experiment-10/.venv/bin/activate
    ```
 
-2. Start Chromium with remote debugging enabled on port `9222`, so it is listening at `127.0.0.1:9222` (required, since the script connects via `debuggerAddress` rather than launching its own browser).
+2. Start Chromium with remote debugging enabled on port `9222` (in a separate terminal — keep it running):
 
-3. Ensure the calculator application is being served at `http://localhost:8000`.
+   ```bash
+   chromium-browser --remote-debugging-port=9222 &
+   ```
+
+   If Chromium crashes or fails to start, add `--no-sandbox` to the command — this flag may be needed depending on the WSL2 kernel configuration.
+
+3. Serve the calculator application at `http://localhost:8000` (in a separate terminal, from inside `experiment-11/`):
+
+   ```bash
+   python3 -m http.server 8000
+   ```
+
+   Keep this server running while the test runs.
 
 4. Run the test:
 

@@ -43,6 +43,30 @@ Separately from *what* the pipeline does is *what starts it* — its **trigger**
 - **Part A** — the pipeline above, started manually (**Build Now**). This was the original working implementation and is what proves the CI/CD stages themselves work correctly.
 - **Part B** — the same goal extended so a `git push` to `main` on GitHub starts the pipeline automatically, with no manual click. This was added *after* Part A was already working, as a second, automatic trigger for the same underlying pipeline.
 
+## Prerequisites — Before Part A
+
+Before running any pipeline, confirm the following are in place on the Jenkins host (WSL2):
+
+**1. Nginx installed:**
+
+```bash
+sudo apt update
+sudo apt install nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+```
+
+**2. Deployment directory created with correct permissions:**
+
+```bash
+sudo mkdir -p /var/www/jenkins-demo
+sudo chown -R jenkins:jenkins /var/www/jenkins-demo
+```
+
+`/var/www/jenkins-demo` is the directory the Deploy stage writes to. The `jenkins` user (which runs the pipeline) must own it, or the Deploy stage will fail with a permission error.
+
+---
+
 ## Part A — Configure Jenkins for the GitHub Repository
 
 *(Original, manually-triggered implementation.)*
@@ -53,7 +77,22 @@ Separately from *what* the pipeline does is *what starts it* — its **trigger**
 
 **Why:** GitHub no longer accepts an account password for Git operations over HTTPS; Jenkins needs a PAT in its place to authenticate when it checks out the repository.
 
-**Action:** Generate a PAT on GitHub, then add it in Jenkins under **Manage Jenkins → Credentials**, using the GitHub username together with the PAT.
+**Creating the PAT on GitHub:**
+
+1. Sign in to GitHub and go to **Settings** (top-right avatar menu).
+2. Scroll down to **Developer settings** (bottom of the left sidebar).
+3. Select **Personal access tokens → Tokens (classic)**.
+4. Click **Generate new token (classic)**.
+5. Set a note (e.g., `Jenkins CI`) and an expiration.
+6. Under **Select scopes**, tick **repo** (grants read access to private repositories). For a public repository, `public_repo` is sufficient.
+7. Click **Generate token** and copy the value — it will not be shown again.
+
+**Adding the PAT to Jenkins:**
+
+1. Go to **Manage Jenkins → Credentials → System → Global credentials → Add Credentials**.
+2. Set **Kind** to `Username with password`.
+3. Enter your GitHub username and paste the PAT as the password.
+4. Give it an ID of `e.g., github-btech-devops` and save.
 
 **Observe:** The credential appears in Jenkins's credentials list and is selectable when configuring the pipeline's source.
 
@@ -63,7 +102,7 @@ Separately from *what* the pipeline does is *what starts it* — its **trigger**
 
 **Why:** A Pipeline job (rather than a single build step) is what allows a defined, ordered sequence of stages — matching the Checkout/Validate/Deploy/Verify flow this experiment uses.
 
-**Action:** Create the Pipeline job, and configure it with the GitHub repository as its source, authenticating with the credential configured in Step 1. The pipeline's stages were defined directly in the job's own pipeline configuration.
+**Action:** Create the Pipeline job, and configure it with the GitHub repository as its source, authenticating with the credential configured in Step 1. The four-stage pipeline is defined in `experiment-05/Jenkinsfile` in this repository — that file is the actual pipeline script used for this experiment.
 
 **Observe:** The pipeline job's configuration shows the GitHub repository connected via the PAT credential.
 
@@ -76,6 +115,8 @@ Separately from *what* the pipeline does is *what starts it* — its **trigger**
 **Action:** The **Deploy** stage was configured to publish the application to `/var/www/jenkins-demo`, from where Nginx serves it.
 
 **Observe:** The pipeline's stage view lists all four stages in order: Checkout → Validate → Deploy → Verify.
+
+**Note on the pipeline script:** The actual pipeline script is `experiment-05/Jenkinsfile` in this repository. It defines the four stages — Checkout, Validate, Deploy, and Verify — matching the flow described in the Concept section. The credential ID used in the Jenkinsfile's Checkout stage is `github-btech-devops`, which must match the credential created in Step 1.
 
 ### Step 4 — Run the Pipeline Manually
 
@@ -119,9 +160,27 @@ Finished: SUCCESS
 
 **Why:** GitHub's webhook delivery requires a publicly reachable URL. ngrok was introduced *specifically* to solve this for a Jenkins instance running locally under WSL2 — it was not needed for Part A, and is not a requirement of Experiment 05's core CI/CD demonstration.
 
-**Action:** Run ngrok pointed at the local Jenkins port, which produces a temporary public URL forwarding to that local Jenkins instance.
+**Installing ngrok (one-time):**
 
-**Observe:** ngrok reports an active public forwarding URL mapped to the local Jenkins instance.
+```bash
+curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+sudo apt update && sudo apt install ngrok
+```
+
+Sign up at ngrok.com, then add your auth token:
+
+```bash
+ngrok config add-authtoken <your-token>
+```
+
+**Running ngrok** (in a separate terminal, keep it open):
+
+```bash
+ngrok http 8080
+```
+
+**Observe:** ngrok reports an active public forwarding URL in the form `https://<random-subdomain>.ngrok-free.app` mapped to `http://localhost:8080`. Copy this URL — it is used as the base of the webhook payload URL in Step 3.
 
 ### Step 3 — Configure GitHub Webhook
 
@@ -129,9 +188,16 @@ Finished: SUCCESS
 
 **Why:** The webhook is what tells GitHub to notify Jenkins on a push; the corresponding trigger option must also be enabled on the Jenkins side, or an incoming webhook call has nothing to start.
 
-**Action:** Add the webhook under the GitHub repository's **Settings → Webhooks**, using the ngrok URL as the payload target, and enable the GitHub push trigger in the pipeline job's configuration.
+**Action:**
 
-**Observe:** The webhook is listed under the repository's Webhooks settings.
+1. In GitHub, go to the repository → **Settings → Webhooks → Add webhook**.
+2. Set **Payload URL** to `<ngrok-forwarding-url>/github-webhook/` (include the trailing slash and the `/github-webhook/` path — this is the specific Jenkins endpoint that handles GitHub events).
+3. Set **Content type** to `application/json`.
+4. Leave **Which events** as **Just the push event**.
+5. Click **Add webhook**.
+6. In Jenkins, open the pipeline job → **Configure → Build Triggers**, and tick **GitHub hook trigger for GITScm polling**. Save.
+
+**Observe:** The webhook is listed under the repository's Webhooks settings. The Jenkins pipeline job shows **GitHub hook trigger for GITScm polling** enabled under Build Triggers.
 
 ### Step 4 — Push to `main`
 

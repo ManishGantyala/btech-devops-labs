@@ -136,7 +136,13 @@ docker build -t techfest-app:v1 .
 docker run -d --name techfest-container -p <host-port>:80 techfest-app:v1
 ```
 
-*(Nginx listens on port 80 inside the container by default; the specific host-side port mapped for `techfest-container` is not part of the supplied record and is left as `<host-port>` here rather than invented.)*
+Replace `<host-port>` with any available port on the host machine (the specific port used when this experiment was originally run was not recorded). Choose a port that is not already in use — check with `sudo lsof -i :<port>` before running.
+
+| Flag | Meaning |
+|---|---|
+| `-d` | Detached mode — runs the container in the background, returning control to the terminal immediately instead of attaching to the container's output |
+| `--name techfest-container` | Assigns the container a human-readable name so you can reference it in later commands (e.g., `docker stop techfest-container`) without looking up its ID |
+| `-p <host-port>:80` | Maps the chosen host port to port 80 inside the container. Nginx listens on port 80 inside the container; accessing `http://localhost:<host-port>` on the host reaches it |
 
 **Observe:** `techfest-container` appears as a running container (`docker ps`).
 
@@ -146,7 +152,7 @@ docker run -d --name techfest-container -p <host-port>:80 techfest-app:v1
 
 **Why:** Confirms the image build and container run actually produced a working, servable application — not just a container that exists.
 
-**Action/Command:** Open the mapped host port for `techfest-container` in a browser.
+**Action/Command:** Open `http://localhost:<host-port>` in a browser, using the port chosen in Step 3.
 
 **Observe:** The registration page loads, served by Nginx from inside the container.
 
@@ -156,16 +162,21 @@ docker run -d --name techfest-container -p <host-port>:80 techfest-app:v1
 
 **Why:** This is the change that the next image version (`v2`) needs to be built to reflect.
 
-**Action/Command:** No command — this is an edit to the application source files.
+**Action/Command:** Open `experiment-07/index.html` and find the main heading line:
 
-**Observe:** Comparing the application files against their earlier form (as in Experiment 01), the page heading was changed:
-
-```text
-- TechFest 2026 - Event Registration
-+ TechFest 2026 - Docker Containerized Application
+```html
+<h1>TechFest 2026 - Event Registration</h1>
 ```
 
-This is the modification reflected in the current `index.html` in this experiment's directory.
+Change it to:
+
+```html
+<h1>TechFest 2026 - Docker Containerized Application</h1>
+```
+
+Save the file.
+
+**Observe:** This is the only line changed between the Experiment 01 and Experiment 07 versions of `index.html`. The modification is already reflected in the current `index.html` in this experiment's directory.
 
 ### Step 6 — Build `techfest-app:v2`
 
@@ -221,7 +232,7 @@ docker run -d --name techfest-container-v2 -p 8081:80 techfest-app:v2
 |---|---|---|
 | `techfest-app:v1` exists | `docker images` | The first image was built successfully |
 | `techfest-container` runs | `docker ps` | A container was started from `techfest-app:v1` |
-| Application is served (v1) | Browser, via `techfest-container` | Nginx is serving the application from the `v1` image |
+| Application is served (v1) | Browser, via `techfest-container` on the chosen host port | Nginx is serving the application from the `v1` image |
 | Application source modified | `experiment-07/index.html` | Heading changed to "TechFest 2026 - Docker Containerized Application" |
 | `techfest-app:v2` exists | `docker images` | A second image was built after the modification |
 | `techfest-container-v2` runs | `docker ps` | A new container was started from `techfest-app:v2` |
@@ -243,7 +254,7 @@ docker run -d --name techfest-container-v2 -p 8081:80 techfest-app:v2
 | Command | Purpose |
 |---|---|
 | `docker build -t techfest-app:v1 .` | Build the first image version from the Dockerfile |
-| `docker run -d --name techfest-container -p <port>:80 techfest-app:v1` | Run a container from the v1 image |
+| `docker run -d --name techfest-container -p <host-port>:80 techfest-app:v1` | Run a container from the v1 image (choose an available host port) |
 | `docker build -t techfest-app:v2 .` | Build a new image version after modifying the application |
 | `docker run -d --name techfest-container-v2 -p 8081:80 techfest-app:v2` | Run a new container from the v2 image, on port 8081 |
 | `docker images` | Confirm both `techfest-app:v1` and `techfest-app:v2` exist locally |

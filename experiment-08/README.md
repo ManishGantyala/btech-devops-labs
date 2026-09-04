@@ -171,6 +171,39 @@ spec:
 | `ports[0].targetPort` | `80` | Port on the Pod/container that traffic is forwarded to |
 | `spec.type` | `NodePort` | Also exposes the Service on a port on the cluster node, for access from outside the cluster |
 
+## Prerequisites — Kind Cluster Setup
+
+This experiment uses **Kind** (Kubernetes in Docker) as the local cluster tool. The cluster must exist and the `techfest-app:v2` image must be loaded into it before applying the manifests.
+
+**Create the Kind cluster** (one-time, if not already created):
+
+```bash
+kind create cluster --name experiment-08
+```
+
+**Confirm the cluster is running:**
+
+```bash
+kubectl get nodes
+```
+
+**Expected output:**
+
+```text
+NAME                          STATUS   ROLES           AGE
+experiment-08-control-plane   Ready    control-plane   ...
+```
+
+**Load the image into the Kind node:**
+
+```bash
+kind load docker-image techfest-app:v2 --name experiment-08
+```
+
+Kind runs its node as a Docker container with its own image store, separate from the host's Docker daemon. `kind load docker-image` makes `techfest-app:v2` available inside the cluster node, which is required because `imagePullPolicy: Never` is set — Kubernetes will not attempt a registry pull.
+
+---
+
 ## Procedure
 
 ### Step 1 — Confirm `techfest-app:v2` Is Available Locally
@@ -272,8 +305,8 @@ kubectl get service techfest-service
 | Service selector `app: techfest-app` matches Pod label | `experiment-08/service.yaml` (configuration evidence) | Service will correctly route to the Deployment's Pod(s) |
 | Service `targetPort: 80` matches container's `containerPort: 80` | Both manifests (configuration evidence) | Traffic forwarded by the Service reaches the port Nginx listens on |
 | Service `type: NodePort` | `experiment-08/service.yaml` (configuration evidence) | Service is configured for external, node-level access |
-| Deployment/Pod actually running in the cluster | *(runtime evidence)* | Not established — no `kubectl get` output captured for this experiment |
-| Service assigned a working NodePort, application reachable | *(runtime evidence)* | Not established — no NodePort value or access result captured for this experiment |
+| Deployment/Pod actually running in the cluster | *(runtime evidence — see Experiment 09)* | Experiment 09's Step 1 baseline check shows `techfest-app` Deployment at `1/1`, Pod `techfest-app-6c98cc6db8-bzlvx` `Running`, on node `experiment-08-control-plane` |
+| Service assigned a working NodePort, application reachable | *(runtime evidence — see Experiment 09)* | Experiment 09's Step 1 shows `techfest-service` with NodePort `80:30576/TCP`, Cluster-IP `10.96.184.50` |
 
 ## Common Mistakes
 

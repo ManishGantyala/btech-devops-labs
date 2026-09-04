@@ -71,7 +71,9 @@ sudo apt install fontconfig openjdk-17-jre
 
 **What:** Add Jenkins's own package repository and its signing key to the system.
 
-**Why:** Jenkins is not part of the default OS package repositories, so `apt` has no way to find it until this repository is added.
+**Why:** Linux package managers like `apt` work from a list of known *repositories* — servers that host installable software packages. The OS ships with a default list, but Jenkins is not on it. Adding Jenkins's own repository tells `apt` exactly where to look for the `jenkins` package.
+
+A **signing key** is a cryptographic credential that Jenkins's maintainers use to sign every package they publish. When you download a signing key and tell `apt` to require it (`signed-by=...`), `apt` verifies that each package it downloads actually came from the legitimate Jenkins project and was not tampered with in transit. Without this step, `apt` would refuse to install the package for security reasons.
 
 **Command:**
 
@@ -224,6 +226,7 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 | Looking for the password in the wrong location | "No such file or directory" when reading the password | Use the exact path `/var/lib/jenkins/secrets/initialAdminPassword`, with `sudo` |
 | Closing the browser mid-setup-wizard | Setup appears "stuck" or incomplete on reopening | Reopen `http://localhost:8080`; Jenkins resumes the wizard where it left off |
 | Treating a failed plugin in Step 8 as a fatal error | Wizard shows one or two plugins failed | Jenkins allows continuing; failed plugins can be retried later from **Manage Jenkins → Plugins** — this is not part of this experiment's scope |
+| Port 8080 already in use by another process | Browser shows "connection refused" or `systemctl status jenkins` shows the service failed to start | Run `sudo lsof -i :8080` to see which process is using port 8080; stop that process first, then restart Jenkins with `sudo systemctl start jenkins` |
 
 ## Quick Reference
 

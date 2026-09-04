@@ -139,6 +139,37 @@ Automates the TechFest registration form at `http://localhost:8082`. It:
 5. Clicks the submit button.
 6. Reads the resulting `#message` text and asserts it equals `"Registration successful!"`.
 
+## How to Recreate This Setup
+
+If the virtual environment has not yet been created, or Chromium/ChromeDriver are not installed, run these steps once before attempting the Actual Commands section.
+
+**1. Install Chromium and ChromeDriver on WSL/Linux:**
+
+```bash
+sudo apt update
+sudo apt install chromium-browser chromium-chromedriver
+```
+
+Verify both are present:
+
+```bash
+chromium-browser --version
+chromedriver --version
+```
+
+Both should report the same version (e.g., `151.0.7922.108`). A version mismatch causes ChromeDriver to fail.
+
+**2. Create the virtual environment and install Selenium:**
+
+```bash
+cd experiment-10
+python3 -m venv .venv
+source .venv/bin/activate
+pip install selenium==4.47.0
+```
+
+The virtual environment is created at `experiment-10/.venv` and is git-ignored. Selenium 4.47.0 is pinned to match the version used in this experiment, and is reused by Experiments 11 and 12 via `source ../experiment-10/.venv/bin/activate`.
+
 ## Actual Commands and Verification Performed
 
 1. Activate the virtual environment:
@@ -147,9 +178,30 @@ Automates the TechFest registration form at `http://localhost:8082`. It:
    source .venv/bin/activate
    ```
 
-2. Start Chromium with remote debugging enabled on port `9222`, so it is listening at `127.0.0.1:9222` (required, since both scripts connect via `debuggerAddress` rather than launching their own browser).
+2. Start Chromium with remote debugging enabled on port `9222` (in a separate terminal — keep it running):
 
-3. For `test_techfest.py`, ensure the TechFest registration app is being served at `http://localhost:8082`.
+   ```bash
+   chromium-browser --remote-debugging-port=9222 &
+   ```
+
+   The `&` sends it to the background so the terminal stays usable. Selenium will fail to connect if this step is skipped. If Chromium crashes or fails to start in your environment, add `--no-sandbox` to the command — this is sometimes required depending on the WSL2 kernel configuration, but is not universally needed.
+
+3. For `test_techfest.py`, ensure the TechFest registration app is being served at `http://localhost:8082`. Either of the following works:
+
+   **Option A — Docker container (uses the Experiment 07 image):**
+
+   ```bash
+   docker run -d -p 8082:80 techfest-app:v2
+   ```
+
+   **Option B — Python's built-in HTTP server (no Docker needed):**
+
+   ```bash
+   cd experiment-01
+   python3 -m http.server 8082
+   ```
+
+   The test only needs an HTTP server serving the registration page on port 8082 — either option provides that.
 
 4. Run either script directly:
 

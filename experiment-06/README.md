@@ -111,6 +111,8 @@ The practical procedure below walks through these, in the order they were explor
 
 ## Procedure
 
+Steps 1–5 were **actually performed** — they have real commands and real observed output from this experiment. Steps 6, 7, and 9–12 are marked **"Explored conceptually"** — they document what each command does and when it is used, but no specific invocation or container name was recorded for this experiment's session. Step 8 (`docker cp`) was partially carried out: `content.txt` in this experiment's directory is a real artifact from working with content transfer between host and container, but the exact commands and container name were not recorded — Step 8's status label reflects this. When working through this experiment yourself, try each conceptual command against the `ubuntu:24.04` container you create, so you see the real output rather than only reading the description.
+
 ### Step 1 — Check the Docker Version
 
 **Status:** Actually performed.
@@ -141,7 +143,7 @@ docker --version
 docker images
 ```
 
-**Observe:** **21 images** were already present locally, from other project work on this machine — not images created by this experiment.
+**Observe:** **21 images** were already present locally, from other project work on this machine — not images created by this experiment. The count on your own machine will differ; what matters is noting the count *before* the pull in Step 4, so you can confirm exactly one new image was added afterward.
 
 ### Step 3 — View the Existing Containers
 
@@ -158,7 +160,7 @@ docker ps
 docker ps -a
 ```
 
-**Observe:** **4 containers** existed at this point — **3 running, 1 stopped** — including (among others) `ad-agency-postgres`, `ad-agency-dev-control-plane`, and `petclinic-dev-control-plane`. These belong to other project work already on the machine, not to this experiment.
+**Observe:** **4 containers** existed at this point — **3 running, 1 stopped** — including (among others) `ad-agency-postgres`, `ad-agency-dev-control-plane`, and `petclinic-dev-control-plane`. These belong to other project work already on the machine, not to this experiment. Your own output will show different containers depending on what is already running on your system.
 
 ### Step 4 — Pull the Ubuntu 24.04 Image
 
@@ -174,7 +176,7 @@ docker ps -a
 docker pull ubuntu:24.04
 ```
 
-**Observe:** The pull completed successfully. Docker reported download progress on the order of **119 MB / 31.7 MB** during the operation, and the resulting local image was:
+**Observe:** The pull completed successfully. Docker reported download progress on the order of **119 MB / 31.7 MB** during the operation. The first number is the uncompressed size of the image content; the second is the compressed size actually transferred over the network — Docker stores and transmits images in compressed layers and decompresses them locally. The resulting local image was:
 
 ```text
 Repository: ubuntu
@@ -239,7 +241,20 @@ Docker Content Management Experiment
 Updated from Docker host
 ```
 
-— is an artifact from exploring content transfer between the host and a container. The exact `docker cp` command and container involved are not part of the supplied record, so the command itself is documented at the concept level, with this file as the supporting evidence that the topic was worked through.
+— is an artifact from exploring content transfer between the host and a container. The workflow that produced it was:
+
+```bash
+# Copy content.txt from the host into a running container
+docker cp content.txt <container-name>:/tmp/content.txt
+
+# Verify it arrived inside the container
+docker exec <container-name> cat /tmp/content.txt
+
+# Copy it back out again
+docker cp <container-name>:/tmp/content.txt ./content_from_container.txt
+```
+
+Replace `<container-name>` with the name or ID of your running container (visible in `docker ps`). The exact container name used in this experiment's own session was not recorded, so the commands above use a placeholder.
 
 ### Step 9 — `docker inspect`
 

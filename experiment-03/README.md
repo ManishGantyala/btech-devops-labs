@@ -72,15 +72,23 @@ git switch -c update-registration-form
 
 ### Step 3 — Make a Small Change to the Exercise 1 Source Code
 
-**What:** Edit one of the real Exercise 1 files (`experiment-01/index.html`, `style.css`, or `script.js`) with one small, self-contained change.
+**What:** Edit `experiment-01/index.html` to change the submit button label from `Register` to `Register Now`.
 
 **Why:** The experiment is about managing a real change through GitHub, not about the change's complexity — a small, single-purpose edit is easiest to review and merge cleanly.
 
-> **Note:** No specific change is prescribed by the source material for this experiment. The example below is illustrative only — pick any small, genuine improvement to the registration form when carrying this out (for example, a wording tweak, a label change, or a minor style adjustment), and treat it as the actual change for Steps 3 onward.
->
-> **Example (illustrative, not actually applied to the project files):** changing the submit button's label in `experiment-01/index.html` from `Register` to `Register Now`.
+**Action:** Open `experiment-01/index.html` and find the submit button line:
 
-**Action:** Edit the chosen file and save it.
+```html
+<button type="submit">Register</button>
+```
+
+Change it to:
+
+```html
+<button type="submit">Register Now</button>
+```
+
+Save the file.
 
 **Observe:**
 
@@ -89,7 +97,7 @@ git status
 git diff
 ```
 
-The changed file appears as modified, and `git diff` shows exactly the lines edited.
+`git status` lists `experiment-01/index.html` as modified. `git diff` shows the single changed line — the button text — and nothing else.
 
 ### Step 4 — Stage and Commit the Change
 
@@ -100,11 +108,9 @@ The changed file appears as modified, and `git diff` shows exactly the lines edi
 **Command:**
 
 ```bash
-git add <modified-file>
-git commit -m "<meaningful commit message>"
+git add experiment-01/index.html
+git commit -m "Update submit button label to Register Now"
 ```
-
-*(Adjust the file name and message to match whatever change was actually made in Step 3.)*
 
 **Observe:** `git status` reports a clean working tree; `git log --oneline` shows the new commit on top.
 

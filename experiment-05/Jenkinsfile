@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        credentialsId: 'github-btech-devops',
+                        url: 'https://github.com/ManishGantyala/btech-devops-labs.git' //Replace with your GitHub repository URL
+                    ]]
+                ])
+            }
+        }
+
+        stage('Validate') {
+            steps {
+                sh '''
+                    test -f experiment-01/index.html
+                    test -f experiment-01/style.css
+                    test -f experiment-01/script.js
+                    echo "Experiment 01 files validated successfully."
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    rm -rf /var/www/jenkins-demo/*
+                    cp -r experiment-01/* /var/www/jenkins-demo/
+                    echo "Application deployed successfully."
+                '''
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                sh '''
+                    test -f /var/www/jenkins-demo/index.html
+                    test -f /var/www/jenkins-demo/style.css
+                    test -f /var/www/jenkins-demo/script.js
+                    echo "Deployment verification successful."
+                '''
+            }
+        }
+    }
+}

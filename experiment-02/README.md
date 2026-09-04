@@ -21,6 +21,7 @@ By the end of this experiment, a student should be able to:
 - A computer with Git installed.
 - A terminal or command prompt.
 - A GitHub account.
+- **Branch name note:** recent versions of Git name the default branch `main`; older versions may name it `master`. This guide uses `main` throughout — if your system uses `master`, substitute `master` wherever `main` appears in the steps below.
 
 ---
 
@@ -185,7 +186,7 @@ git add file1.txt file2.txt
 git add .
 ```
 
-(`.` means "everything changed in the current directory.") Run `git status` afterward to confirm exactly what got staged.
+(`.` means "everything changed in the current directory.") **Caution:** `git add .` stages *every* changed and untracked file in the current directory tree — including files you may not intend to commit, such as configuration files containing passwords or large generated files. Run `git status` before using it to review exactly what will be staged.
 
 ### Step 8 — Commit the Staged Changes
 
@@ -313,6 +314,8 @@ git remote -v
 origin  <repository-url> (fetch)
 origin  <repository-url> (push)
 ```
+
+`(fetch)` is the URL Git uses when *downloading* from the remote (`git pull`, `git fetch`). `(push)` is the URL Git uses when *uploading* to the remote (`git push`). In nearly all setups both URLs are identical, which is why Git lists both on separate lines — if they were ever different, you would be able to see it here.
 
 ---
 

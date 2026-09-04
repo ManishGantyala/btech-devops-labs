@@ -20,7 +20,34 @@ The following technologies were used:
 - CSS
 - JavaScript
 
-## 4. Project Structure
+## 4. Concept
+
+### What Are HTML, CSS, and JavaScript?
+
+A web page is built from three technologies, each handling a different concern:
+
+| Technology | File | Role |
+|---|---|---|
+| HTML | `index.html` | Defines the **structure** — the elements on the page: headings, labels, input fields, buttons |
+| CSS | `style.css` | Defines the **appearance** — colours, font sizes, spacing, borders, layout |
+| JavaScript | `script.js` | Defines the **behaviour** — what the page does when a user types or clicks: filtering input, displaying messages |
+
+The browser loads all three files together. `index.html` connects to the other two using standard HTML tags:
+
+```html
+<link rel="stylesheet" href="style.css">   <!-- loads the CSS -->
+<script src="script.js"></script>           <!-- loads the JavaScript -->
+```
+
+### Why a Web Form?
+
+Collecting event registrations on paper or by email is error-prone: entries arrive in different formats, required fields get skipped, and the data is hard to process consistently. A web form enforces structure — every submission provides the same fields in the same order. The browser's built-in input types (`email`, `tel`, `required`) catch formatting mistakes immediately. JavaScript adds a second layer by filtering invalid characters from the name and phone fields as the user types, before the form is ever submitted.
+
+### What "Client-Side" Means
+
+This application is **client-side only**: all logic runs inside the visitor's browser. There is no server and no database. When the form is submitted, `script.js` calls `event.preventDefault()`, which stops the browser's default form-submission behaviour (which would normally send data to a server) and instead shows the success message locally. Because nothing is transmitted over a network, the form works by opening `index.html` directly as a local file — no installation or running server is required.
+
+## 5. Project Structure
 
 ```text
 experiment-01/
@@ -30,7 +57,7 @@ experiment-01/
 └── README.md
 ```
 
-## 5. Application Description
+## 6. Application Description
 
 The application is a TechFest 2026 event registration form.
 
@@ -51,9 +78,9 @@ JavaScript is used to:
 - Restrict the Phone Number field to numeric characters.
 - Display a "Registration successful!" message when the form is submitted.
 
-## 6. Implementation
+## 7. Implementation
 
-### 6.1 HTML Implementation
+### 7.1 HTML Implementation
 
 The `index.html` file defines the structure of the TechFest 2026 event registration form.
 
@@ -71,7 +98,7 @@ The page contains:
 - Register button
 - Registration message
 
-### 6.2 CSS Implementation
+### 7.2 CSS Implementation
 
 The `style.css` file is used to style the registration page.
 
@@ -87,7 +114,7 @@ The styling includes:
 - Button hover effect
 - Input and select focus styling
 
-### 6.3 JavaScript Implementation
+### 7.3 JavaScript Implementation
 
 The `script.js` file provides client-side functionality.
 
@@ -95,15 +122,15 @@ The Full Name field removes characters other than letters and spaces.
 
 The Phone Number field removes characters other than numbers.
 
-When the registration form is submitted, the default form submission is prevented and the following message is displayed:
+When the registration form is submitted, `event.preventDefault()` stops the browser from its default behaviour of navigating to a new page or sending a network request. Instead, the success message is written directly into the `#message` element on the same page:
 
 ```text
 Registration successful!
 ```
 
-## 7. Source Code
+## 8. Source Code
 
-### 7.1 index.html
+### 8.1 index.html
 
 ```html
 <!DOCTYPE html>
@@ -194,7 +221,7 @@ Registration successful!
 </html>
 ```
 
-### 7.2 style.css
+### 8.2 style.css
 
 ```css
 body {
@@ -258,7 +285,7 @@ h2 {
 }
 ```
 
-### 7.3 script.js
+### 8.3 script.js
 
 ```javascript
 const nameInput = document.getElementById("name");
@@ -282,39 +309,55 @@ registrationForm.addEventListener("submit", function (event) {
 });
 ```
 
-## 8. Procedure
+## 9. Procedure
 
-### Step 1: Create the Experiment Directory
+### Step 1: Open the Experiment Directory
 
-The experiment was organized inside the `experiment-01` directory.
+The experiment files are in the `experiment-01/` directory. Three files are present: `index.html`, `style.css`, and `script.js`.
 
-### Step 2: Create the HTML File
+### Step 2: Review the HTML File
 
-The `index.html` file was created to define the structure of the event registration form.
+Open `index.html` in a text editor. Observe how the form structure is defined — each `<label>` paired with an `<input>` or `<select>` corresponds to one field on the registration form. The `id` attribute on each field is what JavaScript uses to locate and interact with that element.
 
-### Step 3: Create the CSS File
+### Step 3: Review the CSS File
 
-The `style.css` file was created to provide styling for the registration page and form elements.
+Open `style.css` in a text editor. Observe how the `.form-container` class and its nested selectors control the appearance of the form box, labels, inputs, and button.
 
-### Step 4: Create the JavaScript File
+### Step 4: Review the JavaScript File
 
-The `script.js` file was created to provide input handling and form submission functionality.
+Open `script.js` in a text editor. Observe the three event listeners: one on the name input (removes non-letter characters on every keystroke), one on the phone input (removes non-digit characters on every keystroke), and one on the form's `submit` event (`event.preventDefault()` stops the browser from sending a network request; `message.textContent` sets the confirmation text).
 
-### Step 5: Link the Files
+### Step 5: Observe How the Files Are Linked
 
-The HTML file links the CSS stylesheet and JavaScript file:
+The HTML file connects to the CSS in the `<head>` section:
 
 ```html
 <link rel="stylesheet" href="style.css">
 ```
 
-and:
+and to the JavaScript at the bottom of `<body>`:
 
 ```html
 <script src="script.js"></script>
 ```
 
-## 9. Application Features
+Placing the `<script>` tag at the bottom of `<body>` ensures all HTML elements exist before JavaScript tries to find them by their `id`.
+
+### Step 6: Open the Application in a Browser
+
+Open `index.html` directly in a web browser — no web server is required.
+
+**Option 1 — File manager:** Navigate to the `experiment-01/` folder and double-click `index.html`.
+
+**Option 2 — Terminal (Linux / WSL):**
+
+```bash
+xdg-open experiment-01/index.html
+```
+
+**Observe:** The TechFest 2026 Event Registration form loads in the browser, showing all six fields and the Register button.
+
+## 10. Application Features
 
 ### User Registration Fields
 
@@ -343,16 +386,18 @@ After submitting the form, the application displays:
 Registration successful!
 ```
 
-## 10. Verification
+## 11. Verification
 
-The implementation can be verified by opening the event registration page and checking the registration form fields and JavaScript functionality.
+Open `experiment-01/index.html` in a browser using Step 6 above. Verify the following:
 
-The expected registration message after form submission is:
+| Check | How to verify | Expected result |
+|---|---|---|
+| Form loads correctly | Open the page | All six fields and the Register button are visible |
+| Name filtering | Type `"Test123 Student!"` into Full Name | Field shows only `"Test Student"` — digits and `!` removed immediately |
+| Phone filtering | Type `"98765abc"` into Phone Number | Field shows only `"98765"` — letters removed immediately |
+| Form submission | Fill all fields and click Register | `"Registration successful!"` appears below the form |
+| Required field validation | Leave a field empty and click Register | Browser highlights the empty field and blocks submission; no success message appears |
 
-```text
-Registration successful!
-```
-
-## 11. Result
+## 12. Result
 
 The simple user registration form for the TechFest 2026 event was developed using HTML, CSS, and JavaScript.
