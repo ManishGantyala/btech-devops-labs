@@ -25,7 +25,7 @@ This manual covers twelve experiments that introduce the core tools and practice
 
 All experiment commands should be typed into this Ubuntu (WSL2) terminal, not into the Windows Command Prompt or PowerShell.
 
-**Instructor Reference Repository:** A public repository demonstrating the expected file structure, commits, and content for all twelve experiments is available at `https://github.com/ManishGantyala/btech-devops-labs`. Students may inspect it at any point to verify that their own work is on the right track. It is provided as a reference only — students should not clone or fork it as their working repository. Each student creates and maintains their own GitHub repository as part of the practical work in Experiments 02 onward.
+**Instructor Reference Repository:** A public repository demonstrating the expected file structure, commits, and content for all twelve experiments is available at `https://github.com/ManishGantyala/btech-devops-labs`. Students may inspect it at any point to verify that their own work is on the right track; forking it to keep a personal copy in your own GitHub account is also fine. A fork of this repository is not a substitute for each student's own working repository — each student creates and maintains their own GitHub repository as part of the practical work in Experiments 02 onward.
 
 ---
 
@@ -381,7 +381,7 @@ sudo apt install git -y
 
 **Branch name note:** Recent versions of Git name the default branch `main`; older versions may name it `master`. This guide uses `main` throughout — substitute `master` wherever `main` appears if your system uses it.
 
-> **Instructor Reference Repository:** The public repository at `https://github.com/ManishGantyala/btech-devops-labs` shows the expected file structure and commit history for all twelve experiments. Use it as a reference to check your own work at any stage. Do not clone or fork it as your working repository — each student creates and uses their own GitHub repository throughout this series.
+> **Instructor Reference Repository:** The public repository at `https://github.com/ManishGantyala/btech-devops-labs` shows the expected file structure and commit history for all twelve experiments. Use it as a reference to check your own work at any stage; you may also fork it to keep a personal copy in your GitHub account. A fork of this repository is not your working repository — Experiment 02 specifically teaches you to create a repository from scratch, configure a remote, push, pull, and clone. That repository you create here is what you continue using from Experiment 03 onward.
 
 ### Concept
 
