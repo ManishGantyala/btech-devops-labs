@@ -10,18 +10,28 @@ By the end of this experiment, a student should be able to:
 
 - Explain why version control is needed.
 - Explain what Git is and what GitHub is, and how they differ.
-- Configure Git and create a local repository.
+- Create a GitHub account and configure Git locally with name and email.
 - Track a file through the working directory → staging area → commit cycle.
 - View commit history and inspect changes.
 - Create, switch, and merge branches.
-- Connect a local repository to GitHub and push, pull, and clone repositories.
+- Create a personal GitHub repository, add the Experiment 01 application to it, and push, pull, and clone it.
 
 ## Requirements
 
-- A computer with Git installed.
+- A GitHub account (free). If you do not have one yet, go to `https://github.com`, click **Sign up**, and create an account before continuing. You will need it for the GitHub steps below.
+- A computer with Git installed. Install it if needed:
+
+```bash
+sudo apt update
+sudo apt install git -y
+```
+
 - A terminal or command prompt.
-- A GitHub account.
-- **Branch name note:** recent versions of Git name the default branch `main`; older versions may name it `master`. This guide uses `main` throughout — if your system uses `master`, substitute `master` wherever `main` appears in the steps below.
+- The three Experiment 01 files (`index.html`, `style.css`, `script.js`) that you built in Experiment 01.
+
+**Branch name note:** Recent versions of Git name the default branch `main`; older versions may name it `master`. This guide uses `main` throughout — if your system uses `master`, substitute `master` wherever `main` appears in the steps below.
+
+> **Instructor Reference Repository:** The public repository at `https://github.com/ManishGantyala/btech-devops-labs` shows the expected file structure and commit history for all twelve experiments. Use it as a reference to check your own work at any stage. Do not clone or fork it as your working repository — each student creates and uses their own GitHub repository throughout this series.
 
 ---
 
@@ -94,7 +104,9 @@ Working Directory --(git add)--> Staging Area --(git commit)--> Local Repository
 
 ---
 
-## 7. Procedure — Local Repository Basics
+## 7. Procedure — Part 1: Git Basics (Practice Repository)
+
+Steps 1–13 use a small practice folder called `git-demo` to learn individual commands in isolation. This folder is disposable — its only purpose is to get comfortable with Git commands before you set up your actual working repository in Part 2.
 
 ### Step 1 — Check Git Installation
 
@@ -110,26 +122,26 @@ git --version
 git version 2.x.x
 ```
 
-### Step 2 — Configure Git
+### Step 2 — Configure Git with Your Name and Email
 
-**Why:** every commit records *who* made it. This only needs to be done once per computer.
+**Why:** every commit permanently records *who* made it. This only needs to be done once per computer. Use your real name and the email address you used for your GitHub account — this is how GitHub links your commits to your profile.
 
 ```bash
-git config --global user.name "<your-name>"
-git config --global user.email "<your-email>"
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
 git config --list
 ```
 
 **Observe:** `user.name` and `user.email` should appear in the `--list` output with the values you set.
 
-### Step 3 — Create a Project Directory
+### Step 3 — Create a Practice Directory
 
 ```bash
 mkdir git-demo
 cd git-demo
 ```
 
-This folder is now your working directory for the rest of the experiment.
+This folder is your working directory for Steps 3–13 only.
 
 ### Step 4 — Initialize a Repository
 
@@ -141,9 +153,7 @@ This folder is now your working directory for the rest of the experiment.
 git init
 ```
 
-**Observe:** a `.git` folder should now exist inside `git-demo` (it is hidden — use `ls -a` to see it).
-
-**Note:** recent versions of Git name the default branch `main`; older versions may default to `master`. This guide uses `main` throughout — if `git branch` shows a different name on your system, substitute that name wherever `main` appears in the steps below.
+**Observe:** Git reports the new repository was initialized. Run `ls -a` to confirm a `.git` folder now exists inside `git-demo`.
 
 ### Step 5 — Check Repository Status
 
@@ -155,7 +165,7 @@ git init
 git status
 ```
 
-**Observe:** with an empty new repository, Git should report the current branch and that there is nothing to commit yet.
+**Observe:** with an empty new repository, Git reports the current branch name and that there is nothing to commit yet. This is the expected starting state.
 
 ### Step 6 — Create a File
 
@@ -164,7 +174,7 @@ echo "Git and GitHub Experiment" > README.txt
 git status
 ```
 
-**Observe:** `README.txt` should be listed as an **untracked file** — Git sees it exists but is not yet tracking it. A new file always starts here, before it can be staged or committed.
+**Observe:** `README.txt` should be listed as an **untracked file** — Git sees it exists but is not tracking it. Every new file starts in this state.
 
 ### Step 7 — Stage the File
 
@@ -177,7 +187,7 @@ git add README.txt
 git status
 ```
 
-**Observe:** `README.txt` should now appear under changes staged for commit.
+**Observe:** `README.txt` should now appear under "Changes to be committed." It has moved from untracked to staged.
 
 To stage more than one file, or everything at once:
 
@@ -186,7 +196,7 @@ git add file1.txt file2.txt
 git add .
 ```
 
-(`.` means "everything changed in the current directory.") **Caution:** `git add .` stages *every* changed and untracked file in the current directory tree — including files you may not intend to commit, such as configuration files containing passwords or large generated files. Run `git status` before using it to review exactly what will be staged.
+(`.` means "everything changed in the current directory.") **Caution:** `git add .` stages *every* changed and untracked file in the current directory tree — including files you may not intend to commit, such as configuration files containing passwords. Run `git status` before using it to review exactly what will be staged.
 
 ### Step 8 — Commit the Staged Changes
 
@@ -205,7 +215,7 @@ The `-m` message should describe *what changed*, not just say "changes" — this
 | Good | `Add event registration form` |
 | Not useful | `changes` |
 
-**Observe:** running `git status` again should report that the working tree is clean, with nothing left to commit.
+**Observe:** running `git status` again should report that the working tree is clean, with nothing left to commit. The commit is permanently saved.
 
 ### Step 9 — View Commit History
 
@@ -214,7 +224,7 @@ git log
 git log --oneline
 ```
 
-`git log` shows full commit details (author, date, message, commit ID); `--oneline` compresses each commit to a single line — useful once a project has many commits.
+`git log` shows full commit details (author, date, message, commit hash); `--oneline` compresses each commit to a single line — useful once a project has many commits.
 
 **Observe:** the commit created in Step 8 should appear, most recent first.
 
@@ -225,7 +235,7 @@ git diff            # changes not yet staged
 git diff --staged   # changes already staged, about to be committed
 ```
 
-Use these to review *exactly* what you're about to stage or commit, before you do it.
+Run `git diff` before staging to review what you are about to add. Run `git diff --staged` before committing to review exactly what the commit will contain.
 
 **Observe:** immediately after Step 8, both commands should show no output — this is expected, since there is nothing staged or modified beyond what was just committed.
 
@@ -264,11 +274,17 @@ git switch -c feature-login
 
 **Observe:** `git branch` should now show `* feature-login`.
 
-### Step 13 — Merge a Branch
+### Step 13 — Commit Something on the Branch, Then Merge
 
-**Why:** once work on a branch is ready, its commits need to be brought into another branch (usually `main`).
+Make a small change on the branch so there is something to merge:
 
-Switch to the branch that should *receive* the changes, then merge:
+```bash
+echo "Feature work" >> README.txt
+git add README.txt
+git commit -m "Add feature note on feature-login branch"
+```
+
+Switch back to `main` and merge:
 
 ```bash
 git switch main
@@ -283,83 +299,149 @@ feature-login --(git merge)--> main
 
 ---
 
-## 9. Working with GitHub
+## 9. Procedure — Part 2: Your Working Repository (Used from Experiment 03 Onwards)
 
-So far, everything has happened only on your computer. This section connects the local repository to a remote one on GitHub.
+The `git-demo` folder was for practice only. Part 2 creates the repository you will use for all remaining experiments. It contains your Experiment 01 application files, is pushed to your own GitHub account, and is what Experiment 03 continues from directly.
 
-### Step 14 — Create a Repository on GitHub
+### Step 14 — Create Your GitHub Repository
 
-1. Sign in to GitHub.
-2. Create a new repository and give it a name.
-3. Create it **without** a README, `.gitignore`, or license file — leave it empty. Your local repository already has commits (from Section 7), and an empty remote avoids a conflict when pushing in Step 17.
-4. Copy the repository's URL — it will look like `https://github.com/<username>/<repository-name>.git`.
+1. Open `https://github.com` in your browser and sign in to your account.
+2. Click the **+** icon at the top-right of the page and select **New repository**.
+3. In the **Repository name** field, enter a name — for example, `devops-lab`. This is your personal repository; choose any name you like.
+4. Set visibility to **Public** or **Private** — either works for this series.
+5. Leave **Add a README file**, **Add .gitignore**, and **Choose a license** all **un-ticked**. The repository must start completely empty so that pushing from your local machine works without conflicts.
+6. Click **Create repository**.
+7. On the blank repository page, copy the HTTPS URL — it looks like `https://github.com/<your-username>/devops-lab.git`. You will paste this URL in Step 17.
 
-### Step 15 — Connect the Local Repository to GitHub
+**Confirm:** The repository page shows "This repository is empty." — this is correct.
 
-**What it does:** registers a remote repository under a short name (conventionally `origin`).
+### Step 15 — Create the Local Working Directory
+
+Move out of the `git-demo` folder and create a new directory for your working repository:
 
 ```bash
-git remote add origin <repository-url>
+cd ..
+mkdir devops-lab
+cd devops-lab
+git init
 ```
 
-### Step 16 — Verify the Remote
+**Observe:** `git init` reports a new repository was initialized inside `devops-lab`. Run `ls -a` to confirm the `.git` folder is present.
+
+### Step 16 — Add Your Experiment 01 Files
+
+The Experiment 01 application files go inside an `experiment-01/` subfolder. This folder structure (`experiment-01/`, `experiment-02/`, …) mirrors how the experiments are organized throughout the series.
+
+```bash
+mkdir experiment-01
+```
+
+Copy your three Experiment 01 files into `experiment-01/`. Adjust the source path to wherever your files are saved:
+
+```bash
+cp /path/to/your/index.html experiment-01/
+cp /path/to/your/style.css  experiment-01/
+cp /path/to/your/script.js  experiment-01/
+```
+
+Confirm the files are in place:
+
+```bash
+ls experiment-01/
+```
+
+**Observe:** `index.html`, `style.css`, and `script.js` are listed inside `experiment-01/`.
+
+### Step 17 — Stage and Commit the Experiment 01 Files
+
+```bash
+git add experiment-01/
+git commit -m "Add Experiment 01 event registration application"
+```
+
+Check the result:
+
+```bash
+git status
+git log --oneline
+```
+
+**Observe:** `git status` reports a clean working tree. `git log --oneline` shows the commit you just made.
+
+### Step 18 — Connect the Local Repository to Your GitHub Repository
+
+Register your GitHub repository as the remote named `origin`:
+
+```bash
+git remote add origin <your-repository-url>
+```
+
+Replace `<your-repository-url>` with the HTTPS URL copied in Step 14.
+
+Verify the remote was registered:
 
 ```bash
 git remote -v
 ```
 
-**Observe:** the output should show the `origin` name mapped to your repository URL, for both fetch and push:
+**Observe:**
 
 ```text
-origin  <repository-url> (fetch)
-origin  <repository-url> (push)
+origin  https://github.com/<your-username>/devops-lab.git (fetch)
+origin  https://github.com/<your-username>/devops-lab.git (push)
 ```
 
-`(fetch)` is the URL Git uses when *downloading* from the remote (`git pull`, `git fetch`). `(push)` is the URL Git uses when *uploading* to the remote (`git push`). In nearly all setups both URLs are identical, which is why Git lists both on separate lines — if they were ever different, you would be able to see it here.
+`(fetch)` is the URL Git uses when *downloading* from GitHub (`git pull`, `git fetch`). `(push)` is the URL Git uses when *uploading* to GitHub (`git push`). Both should show your own GitHub repository URL.
 
----
-
-## 10. Push, Pull, and Clone
-
-| Command | Direction | What it does |
-|---|---|---|
-| `git push` | Local → GitHub | Uploads local commits to the remote repository |
-| `git pull` | GitHub → Local | Downloads and merges new remote commits into your *existing* local repository |
-| `git clone` | GitHub → Local | Creates a *brand-new* local copy of a repository that doesn't exist on your computer yet |
-
-### Step 17 — Push to GitHub
+### Step 19 — Push to GitHub
 
 ```bash
 git push -u origin main
 ```
 
-The `-u` flag is only needed the first time you push a branch — it links your local `main` to GitHub's `main`, so future pushes just need `git push`.
+The `-u` flag links your local `main` branch to the remote `main` branch, so future pushes in this repository only need `git push`.
 
-**Observe:** after this completes without error, open the repository on GitHub in a browser to confirm the pushed files and commit(s) appear there.
+**Observe:** after the push completes, open your GitHub repository in a browser. The `experiment-01/` folder and the three files inside it should be visible on the repository's main page. This is your working repository — it is what Experiment 03 continues from.
 
-### Step 18 — Pull from GitHub
+### Step 20 — Pull from GitHub
 
-Use this when the GitHub repository has changes your local copy doesn't have yet (e.g., made by a collaborator):
+`git pull` downloads any new commits from the remote and merges them into your local branch. In a solo workflow you may not have anything new to pull, but the command is essential when collaborators push changes or when you merge a Pull Request on GitHub (as you will do in Experiment 03).
 
 ```bash
 git pull origin main
 ```
 
-**Observe:** if new commits existed on GitHub, they are now merged in and visible via `git log --oneline`. If your local branch was already up to date (as it will be immediately after Step 17), Git reports "Already up to date" — this is the expected, correct result, not an error.
+**Observe:** because you just pushed, Git reports "Already up to date." — this is the correct, expected result.
 
-### Step 19 — Clone a Repository
+### Step 21 — Clone a Repository
 
-Use this instead of `pull` when the repository doesn't exist locally at all yet:
+`git clone` creates a brand-new local copy of a repository from scratch. Use it when a repository exists on GitHub but not yet on your computer. To demonstrate, clone your own repository into a separate folder:
 
 ```bash
-git clone <repository-url>
-cd <repository-name>
+cd ..
+git clone <your-repository-url> devops-lab-clone
+cd devops-lab-clone
 git status
+ls experiment-01/
 ```
 
-`git clone` downloads the full project history and automatically sets up `origin` for you.
+**Observe:** `git status` shows a clean working tree. The `experiment-01/` folder and all three files are present — cloning downloads everything automatically. Unlike `git init`, `git clone` also sets up `origin` automatically: run `git remote -v` to confirm it already points to your GitHub repository.
 
-**Observe:** `git status` should show a clean working tree with no staging needed — unlike `git init`, cloning sets up the repository and its remote connection automatically.
+Return to your main working directory:
+
+```bash
+cd ../devops-lab
+```
+
+---
+
+## 10. Push, Pull, and Clone — Summary
+
+| Command | Direction | When to use it |
+|---|---|---|
+| `git push` | Local → GitHub | After committing, to upload your commits to GitHub |
+| `git pull` | GitHub → Local | When GitHub has new commits your local copy does not have yet |
+| `git clone` | GitHub → New local folder | When you need a fresh local copy of a repository that does not exist on your machine yet |
 
 ---
 
@@ -367,13 +449,14 @@ git status
 
 Run these commands to confirm the experiment has been carried out correctly:
 
-| Command | Confirms |
+| Check | What to look for |
 |---|---|
-| `git status` | Working tree is clean; nothing left uncommitted |
-| `git log --oneline` | Commit(s) exist with meaningful messages |
-| `git branch` | Expected branches exist |
-| `git remote -v` | `origin` points to the correct GitHub repository URL |
-| *(browser)* GitHub repository page | Pushed files and commits are visible online |
+| `git status` (in `devops-lab/`) | Working tree is clean; nothing left uncommitted |
+| `git log --oneline` (in `devops-lab/`) | At least one commit with a meaningful message |
+| `git branch` | `main` branch exists |
+| `git remote -v` | `origin` points to your own GitHub repository URL |
+| GitHub repository page in browser | `experiment-01/` folder with `index.html`, `style.css`, `script.js` visible |
+| `git status` (in `devops-lab-clone/`) | Clean working tree; `experiment-01/` files present |
 
 ## 12. Common Beginner Mistakes
 
@@ -384,14 +467,15 @@ Run these commands to confirm the experiment has been carried out correctly:
 | Confusing `add` with `commit` | Changes staged but never saved to history | Always follow `git add` with `git commit -m "..."` |
 | Forgetting to push | Commits exist locally but not on GitHub | `git push` after committing |
 | Editing on the wrong branch | Changes end up on an unintended branch | `git branch` to check, `git switch` to change |
-| GitHub repo created with a README/license already present | `git push` fails with "failed to push some refs" / "updates were rejected" | Recreate the GitHub repo empty (Section 9), or run `git pull origin main --allow-unrelated-histories` once to merge the two histories before pushing again |
+| GitHub repo created with a README/license already present | `git push` fails with "failed to push some refs" / "updates were rejected" | Recreate the GitHub repo empty (all options un-ticked), or run `git pull origin main --allow-unrelated-histories` once to merge the two histories before pushing |
+| Using someone else's repository URL instead of your own | You do not have push access | Confirm `git remote -v` shows your own GitHub username in the URL |
 
 ## 13. Quick Command Reference
 
 | Command | Purpose |
 |---|---|
 | `git --version` | Check installed Git version |
-| `git config` | Set name/email or view configuration |
+| `git config --global user.name` / `user.email` | Set your identity for commits |
 | `git init` | Initialize a repository |
 | `git status` | Check current repository state |
 | `git add` | Stage changes |
@@ -400,12 +484,15 @@ Run these commands to confirm the experiment has been carried out correctly:
 | `git diff` / `git diff --staged` | View unstaged / staged changes |
 | `git branch` | List or create branches |
 | `git switch` | Change the current branch |
+| `git switch -c` | Create and switch to a new branch |
 | `git merge` | Combine another branch into the current one |
-| `git remote add` / `git remote -v` | Add / view a remote repository |
-| `git push` | Upload commits to the remote |
+| `git remote add origin` | Register a remote repository |
+| `git remote -v` | View registered remotes |
+| `git push -u origin main` | Push and link the branch to the remote (first push) |
+| `git push` | Push after the first time |
 | `git pull` | Download and merge remote changes |
 | `git clone` | Create a local copy of a remote repository |
 
 ## 14. Result
 
-This experiment covered the essential Git and GitHub commands and the workflow that connects them: initializing a repository, tracking a file through the staging area and into a commit, viewing commit history and changes, creating and merging a branch, and connecting a local repository to GitHub for pushing, pulling, and cloning. Completing the procedure in Sections 7 to 10 demonstrates each of these operations in sequence.
+This experiment covered the essential Git and GitHub commands: configuring Git with a name and email, initializing a local repository, tracking files through the staging area into commits, viewing history and diffs, creating and merging branches, and connecting a local repository to a personal GitHub repository for pushing, pulling, and cloning. By the end of Part 2, a working repository containing the Experiment 01 application files is live on your own GitHub account — this repository is what Experiment 03 continues from.
